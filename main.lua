@@ -1,9 +1,12 @@
 require "tile"
 require "camera"
 require "player"
+require "note"
 
 SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
+
+SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 
 function CalcPitchRatio( tilex, tiley ) 
 
@@ -55,7 +58,12 @@ function love.load()
 	
 		for j = 1, 10 do
 		
-			map[i][j] = Tile:new();
+			t = Tile:new{ x = i, y = j };
+			pitch = CalcPitchRatio(i,j)
+			n = Note:new{ num = pitch[1], den = pitch[2] }
+			t.note = n;
+			
+			map[i][j] = t;
 		
 		end 
 	end	
@@ -95,4 +103,6 @@ function love.draw()
 		end
 	end 
 	love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	
+	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
 end

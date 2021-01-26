@@ -1,4 +1,6 @@
 Tile = {
+	x = 0,
+	y = 0,
 	note = nil
 }
 
