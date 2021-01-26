@@ -7,7 +7,10 @@ Player = {
 	moving = false, -- just a useless bool iunno
 
 	currentnum = 1,
-	currentden = 1
+	currentden = 1,
+	
+	safeTiles = {},
+	chordTones = {}
 }
 
 function Player:update()

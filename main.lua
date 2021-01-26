@@ -4,14 +4,52 @@ require "player"
 require "note"
 
 SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
+SPR_TILESET_1 = love.graphics.newImage("img/spr_tileset_1.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
 
 SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
+SND_ORGAN1 = love.audio.newSource("snd/snd_organ.wav" , "static");
+SND_ORGAN2 = love.audio.newSource("snd/snd_organ.wav" , "static");
+SND_ORGAN3 = love.audio.newSource("snd/snd_organ.wav" , "static");
+
+function ChangeChord(offsetsX, offsetsY)
+	player.safeTiles = {};
+	player.chordTones = {};
+	
+	for i = 1, #offsetsX do
+		
+		if map[player.tileX + offsetsX[i]] ~= nil then
+			tile = map[player.tileX + offsetsX[i]][player.tileY + offsetsY[i]]
+			
+			if tile ~= nil then
+				table.insert(player.safeTiles, tile)
+				table.insert(player.chordTones, tile.note)
+			end
+		end
+	end
+end
+
+function PlayChord()
+	organ_tones = {SND_ORGAN1, SND_ORGAN2, SND_ORGAN3}
+	
+	for i = 1, #organ_tones do
+		love.audio.stop( organ_tones[i] );
+	end
+	for i = 1, #player.chordTones do	
+		
+		organ_tones[i]:setPitch(player.chordTones[i].num / player.chordTones[i].den);
+		organ_tones[i]:setVolume(0.25);
+		organ_tones[i]:setLooping(true);
+		
+		love.audio.play(organ_tones[i]);
+	end
+
+end
 
 function CalcPitchRatio( tilex, tiley ) 
 
-	xdiff = tilex - 5;
-	ydiff = tiley - 5;
+	xdiff = tilex - room.centerX;
+	ydiff = tiley - room.centerY;
 
 	output = {}
 	numerator = 1;
@@ -50,13 +88,15 @@ end
 
 function love.load()
 
+	rooms = require "rooms"
+	room = rooms[1];
 	map = {};
 	
-	for i = 1, 10 do
+	for i = 1, room.width do
 		
 		map[i] = {};
 	
-		for j = 1, 10 do
+		for j = 1, room.height do
 		
 			t = Tile:new{ x = i, y = j };
 			pitch = CalcPitchRatio(i,j)
@@ -68,24 +108,45 @@ function love.load()
 		end 
 	end	
 	
-	player = Player:new();
+	player = Player:new{ tileX = room.centerX, tileY = room.centerY };
 end
 
 function love.keypressed(key, scancode, isrepeat)
 
+	if key == "z" then
+		ChangeChord( { 0, 0, 1 }, { 0, 1, 0 } ) -- major triad
+		PlayChord();
+	end
+	if key == "x" then
+		ChangeChord( { 0, 1, 1 }, { 0, -1, 0 } ) -- minor triad
+		PlayChord();
+	end
+	if key == "c" then
+		ChangeChord( { 0, -1, 1 }, { 0, 0, 0 } ) -- sus chord
+		PlayChord();
+	end
+
 	if key == "up" then
-		player.tileY = player.tileY - 1;
-		player.moving = true;
+		if player.tileY > 1 then
+			player.tileY = player.tileY - 1;
+			player.moving = true;
+		end
 	elseif key == "down" then
-		player.tileY = player.tileY + 1;
-		player.moving = true;
+		if player.tileY < room.height then
+			player.tileY = player.tileY + 1;
+			player.moving = true;
+		end
 	end
 	if key == "left" then
-		player.tileX = player.tileX - 1;
-		player.moving = true;
+		if player.tileX > 1 then
+			player.tileX = player.tileX - 1;
+			player.moving = true;
+		end
 	elseif key == "right" then
-		player.tileX = player.tileX + 1;
-		player.moving = true;
+		if player.tileX < room.width then
+			player.tileX = player.tileX + 1;
+			player.moving = true;
+		end
 	end
 end
 
@@ -97,11 +158,15 @@ end
 
 function love.draw()
 	
-	for i = 1, 10 do
-		for j = 1, 10 do
-			love.graphics.draw(SPR_TILESET_0, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
+	for i = 1, room.width do
+		for j = 1, room.height do
+			love.graphics.draw(SPR_TILESET_1, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
 		end
 	end 
+	for i = 1, #player.safeTiles do
+		tile = player.safeTiles[i]
+		love.graphics.draw(SPR_TILESET_0, tra_x(tile.x*32), tra_y(tile.y*32), 0, cam_zoom, cam_zoom)
+	end
 	love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
 	
 	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
