@@ -4,9 +4,5 @@ return {
 	{
 		name="test_room",
 		entities = {},
-		width = 15,
-		height = 10,
-		centerX = 9,
-		centerY = 4
 	}
 }

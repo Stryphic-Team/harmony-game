@@ -3,6 +3,12 @@ require "camera"
 require "player"
 require "note"
 
+TILE_FREE = 1
+TILE_CNTR = 3
+TILE_HOLE = 4
+TILE_WALL = 5
+
+SPR_TILESET   = love.graphics.newImage("img/tileset.png");
 SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
 SPR_TILESET_1 = love.graphics.newImage("img/spr_tileset_1.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
@@ -86,11 +92,26 @@ function CalcPitchRatio( tilex, tiley )
 
 end
 
-function love.load()
-
-	rooms = require "rooms"
-	room = rooms[1];
+function init_room( id )
+	room = rooms[id]
+	room_data = require(room_paths[id])
+	
+	room.width = room_data.width; room.height = room_data.height;
+	
 	map = {};
+	
+	for i = 1, room.width do
+		for j = 1, room.height do
+
+			index = ((i-1) * room.width) + (j-1)
+			tilefromdata = room_data.layers[1].data[index+1]
+		
+			if tilefromdata == 3 then 
+				room.centerX = i; room.centerY = j;
+				tilefromdata = 1
+			end
+		end
+	end
 	
 	for i = 1, room.width do
 		
@@ -98,7 +119,14 @@ function love.load()
 	
 		for j = 1, room.height do
 		
-			t = Tile:new{ x = i, y = j };
+			index = ((i-1) * room.width) + (j-1)
+			tilefromdata = room_data.layers[1].data[index+1]
+				
+			if tilefromdata == 2 then
+				tilefromdata = 1
+			end
+		
+			t = Tile:new{ x = i, y = j, tiletype = tilefromdata };
 			pitch = CalcPitchRatio(i,j)
 			n = Note:new{ num = pitch[1], den = pitch[2] }
 			t.note = n;
@@ -109,6 +137,16 @@ function love.load()
 	end	
 	
 	player = Player:new{ tileX = room.centerX, tileY = room.centerY };
+end
+
+function love.load()
+
+	room_paths = {
+	"room/testroom" }
+
+	rooms = require "rooms"
+
+	init_room(1)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -160,7 +198,14 @@ function love.draw()
 	
 	for i = 1, room.width do
 		for j = 1, room.height do
-			love.graphics.draw(SPR_TILESET_1, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
+		
+			t = map[i][j]
+			tx = ((t.tiletype - 1) % 16) * 32
+			ty = math.floor((t.tiletype - 1) / 16) * 32
+			
+			quad = love.graphics.newQuad( tx, ty, 32, 32, SPR_TILESET:getDimensions() )
+			
+			love.graphics.draw(SPR_TILESET, quad, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
 		end
 	end 
 	for i = 1, #player.safeTiles do
