@@ -12,11 +12,12 @@ SPR_TILESET   = love.graphics.newImage("img/tileset.png");
 SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
 SPR_TILESET_1 = love.graphics.newImage("img/spr_tileset_1.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
+SPR_PLAYER_1  = love.graphics.newImage("img/spr_player_1.png");
 
 SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
-SND_ORGAN1 = love.audio.newSource("snd/snd_organ.wav" , "static");
-SND_ORGAN2 = love.audio.newSource("snd/snd_organ.wav" , "static");
-SND_ORGAN3 = love.audio.newSource("snd/snd_organ.wav" , "static");
+SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
+SND_ORGAN2 = love.audio.newSource("snd/pianuh.wav" , "static");
+SND_ORGAN3 = love.audio.newSource("snd/pianuh.wav" , "static");
 
 function ChangeChord(offsetsX, offsetsY)
 	player.safeTiles = {};
@@ -27,7 +28,7 @@ function ChangeChord(offsetsX, offsetsY)
 		if map[player.tileX + offsetsX[i]] ~= nil then
 			tile = map[player.tileX + offsetsX[i]][player.tileY + offsetsY[i]]
 			
-			if tile ~= nil then
+			if tile ~= nil and tile.tiletype == 1 then
 				table.insert(player.safeTiles, tile)
 				table.insert(player.chordTones, tile.note)
 			end
@@ -45,7 +46,7 @@ function PlayChord()
 		
 		organ_tones[i]:setPitch(player.chordTones[i].num / player.chordTones[i].den);
 		organ_tones[i]:setVolume(0.25);
-		organ_tones[i]:setLooping(true);
+		organ_tones[i]:setLooping(false);
 		
 		love.audio.play(organ_tones[i]);
 	end
@@ -145,11 +146,12 @@ end
 function love.load()
 
 	room_paths = {
-	"room/testroom" }
+	"room/testroom",
+	"room/testroom2" }
 
 	rooms = require "rooms"
 
-	init_room(1)
+	init_room(2)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -164,6 +166,10 @@ function love.keypressed(key, scancode, isrepeat)
 	end
 	if key == "c" then
 		ChangeChord( { 0, -1, 1 }, { 0, 0, 0 } ) -- sus chord
+		PlayChord();
+	end
+	if key == "r" then
+		ChangeChord({}, {});
 		PlayChord();
 	end
 
@@ -215,6 +221,8 @@ end
 
 function love.update(dt)
 
+	player.uppercase = love.keyboard.isDown("lshift")
+
 	player:update();
 	
 end
@@ -237,7 +245,12 @@ function love.draw()
 		tile = player.safeTiles[i]
 		love.graphics.draw(SPR_TILESET_0, tra_x(tile.x*32), tra_y(tile.y*32), 0, cam_zoom, cam_zoom)
 	end
-	love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	
+	if player.uppercase then
+		love.graphics.draw(SPR_PLAYER_1, tra_x(player.x), tra_y(player.y - 32), 0, cam_zoom, cam_zoom);
+	else 
+		love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	end
 	
 	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
 end

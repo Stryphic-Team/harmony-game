@@ -26,7 +26,11 @@ function Player:update()
 		tile = map[self.tileX][self.tileY];
 		note = tile.note;
 		
-		SND_PLAYER:setPitch(note.num / note.den);
+		if self.uppercase then
+			SND_PLAYER:setPitch((note.num * 2) / note.den);
+		else
+			SND_PLAYER:setPitch(note.num / note.den);
+		end
 		
 		self.currentnum = note.num; self.currentden = note.den;
 		

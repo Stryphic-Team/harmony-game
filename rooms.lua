@@ -2,7 +2,11 @@
 
 return {
 	{
-		name="test_room",
+		name="testroom",
+		entities = {},
+	},
+	{
+		name="testroom2",
 		entities = {},
 	}
 }
