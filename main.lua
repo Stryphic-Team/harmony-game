@@ -100,6 +100,7 @@ function init_room( id )
 	
 	map = {};
 	
+	-- First pass on room initialization just looks for the center tile (Its marked with the red circle in the editor but not in game)
 	for i = 1, room.width do
 		for j = 1, room.height do
 
@@ -113,6 +114,7 @@ function init_room( id )
 		end
 	end
 	
+	-- Second pass on room initialization creates all the tile objects and, with the known center tile, calculates the note pitches and makes note objects
 	for i = 1, room.width do
 		
 		map[i] = {};
@@ -122,7 +124,7 @@ function init_room( id )
 			index = ((i-1) * room.width) + (j-1)
 			tilefromdata = room_data.layers[1].data[index+1]
 				
-			if tilefromdata == 2 then
+			if tilefromdata == 2 or tilefromdata == 3 then
 				tilefromdata = 1
 			end
 		
@@ -136,6 +138,7 @@ function init_room( id )
 		end 
 	end	
 	
+	-- new player object is created every room init ( maybe it shouldnt be like that I DONT KNOW )
 	player = Player:new{ tileX = room.centerX, tileY = room.centerY };
 end
 
@@ -166,24 +169,46 @@ function love.keypressed(key, scancode, isrepeat)
 
 	if key == "up" then
 		if player.tileY > 1 then
-			player.tileY = player.tileY - 1;
-			player.moving = true;
+		
+			targettile = map[player.tileX][player.tileY - 1]
+			if targettile.tiletype == 1 then
+			
+				player.tileY = player.tileY - 1;
+				player.moving = true;
+			
+			end
 		end
 	elseif key == "down" then
 		if player.tileY < room.height then
-			player.tileY = player.tileY + 1;
-			player.moving = true;
+		
+			targettile = map[player.tileX][player.tileY + 1]
+			if targettile.tiletype == 1 then			
+			
+				player.tileY = player.tileY + 1;
+				player.moving = true;
+			
+			end
 		end
 	end
 	if key == "left" then
 		if player.tileX > 1 then
-			player.tileX = player.tileX - 1;
-			player.moving = true;
+		
+			targettile = map[player.tileX - 1][player.tileY]
+			if targettile.tiletype == 1 then	
+			
+				player.tileX = player.tileX - 1;
+				player.moving = true;
+			end
 		end
 	elseif key == "right" then
 		if player.tileX < room.width then
-			player.tileX = player.tileX + 1;
-			player.moving = true;
+		
+			targettile = map[player.tileX + 1][player.tileY]
+			if targettile.tiletype == 1 then
+			
+				player.tileX = player.tileX + 1;
+				player.moving = true;
+			end
 		end
 	end
 end
