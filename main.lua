@@ -1,5 +1,6 @@
 require "tile"
 require "camera"
+require "entity"
 require "player"
 require "note"
 
@@ -13,6 +14,7 @@ SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
 SPR_TILESET_1 = love.graphics.newImage("img/spr_tileset_1.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
 SPR_PLAYER_1  = love.graphics.newImage("img/spr_player_1.png");
+SPR_ENEMY     = love.graphics.newImage("img/spr_enemy.png");
 
 SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
@@ -145,13 +147,18 @@ end
 
 function love.load()
 
+	love.window.setTitle("JI game")
+
 	room_paths = {
 	"room/testroom",
 	"room/testroom2" }
 
 	rooms = require "rooms"
 
-	init_room(2)
+	init_room(1)
+	
+	e = Entity:new{};
+	table.insert(room.entities, e)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -225,6 +232,10 @@ function love.update(dt)
 
 	player:update();
 	
+	for i = 1, #room.entities do
+		e = room.entities[i];
+		e:update();
+	end
 end
 
 function love.draw()
@@ -244,6 +255,11 @@ function love.draw()
 	for i = 1, #player.safeTiles do
 		tile = player.safeTiles[i]
 		love.graphics.draw(SPR_TILESET_0, tra_x(tile.x*32), tra_y(tile.y*32), 0, cam_zoom, cam_zoom)
+	end
+	
+	for i = 1, #room.entities do
+		e = room.entities[i]
+		love.graphics.draw(SPR_ENEMY, tra_x(e.x), tra_y(e.y), 0, cam_zoom, cam_zoom);
 	end
 	
 	if player.uppercase then
