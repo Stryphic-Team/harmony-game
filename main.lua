@@ -20,6 +20,7 @@ SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
 SND_ORGAN2 = love.audio.newSource("snd/pianuh.wav" , "static");
 SND_ORGAN3 = love.audio.newSource("snd/pianuh.wav" , "static");
+SND_ENEMY  = love.audio.newSource("snd/snd_enemy.wav", "static");
 
 function ChangeChord(offsetsX, offsetsY)
 	player.safeTiles = {};
@@ -33,6 +34,15 @@ function ChangeChord(offsetsX, offsetsY)
 			if tile ~= nil and tile.tiletype == 1 then
 				table.insert(player.safeTiles, tile)
 				table.insert(player.chordTones, tile.note)
+				
+				-- Scans the room for entitys and kills any that are on the safe tiles
+				for j = 1, #room.entities do
+				
+					e = room.entities[j]
+					if e.tileX == tile.x and e.tileY == tile.y then
+						e.dead = true;
+					end
+				end
 			end
 		end
 	end
@@ -53,6 +63,7 @@ function PlayChord()
 		love.audio.play(organ_tones[i]);
 	end
 
+	next_turn();
 end
 
 function CalcPitchRatio( tilex, tiley ) 
@@ -93,6 +104,12 @@ function CalcPitchRatio( tilex, tiley )
 	
 	return output;
 
+end
+
+function next_turn()
+	for i = 1, #room.entities do
+		e:nextTurn();
+	end
 end
 
 function init_room( id )
@@ -179,48 +196,50 @@ function love.keypressed(key, scancode, isrepeat)
 		ChangeChord({}, {});
 		PlayChord();
 	end
-
-	if key == "up" then
-		if player.tileY > 1 then
-		
-			targettile = map[player.tileX][player.tileY - 1]
-			if targettile.tiletype == 1 then
+	
+	if not player.moving then
+		if key == "up" then
+			if player.tileY > 1 then
 			
-				player.tileY = player.tileY - 1;
-				player.moving = true;
+				targettile = map[player.tileX][player.tileY - 1]
+				if targettile.tiletype == 1 then
+				
+					player.tileY = player.tileY - 1;
+					player.moving = true;
+				
+				end
+			end
+		elseif key == "down" then
+			if player.tileY < room.height then
 			
+				targettile = map[player.tileX][player.tileY + 1]
+				if targettile.tiletype == 1 then			
+				
+					player.tileY = player.tileY + 1;
+					player.moving = true;
+				
+				end
 			end
 		end
-	elseif key == "down" then
-		if player.tileY < room.height then
-		
-			targettile = map[player.tileX][player.tileY + 1]
-			if targettile.tiletype == 1 then			
+		if key == "left" then
+			if player.tileX > 1 then
 			
-				player.tileY = player.tileY + 1;
-				player.moving = true;
-			
+				targettile = map[player.tileX - 1][player.tileY]
+				if targettile.tiletype == 1 then	
+				
+					player.tileX = player.tileX - 1;
+					player.moving = true;
+				end
 			end
-		end
-	end
-	if key == "left" then
-		if player.tileX > 1 then
-		
-			targettile = map[player.tileX - 1][player.tileY]
-			if targettile.tiletype == 1 then	
+		elseif key == "right" then
+			if player.tileX < room.width then
 			
-				player.tileX = player.tileX - 1;
-				player.moving = true;
-			end
-		end
-	elseif key == "right" then
-		if player.tileX < room.width then
-		
-			targettile = map[player.tileX + 1][player.tileY]
-			if targettile.tiletype == 1 then
-			
-				player.tileX = player.tileX + 1;
-				player.moving = true;
+				targettile = map[player.tileX + 1][player.tileY]
+				if targettile.tiletype == 1 then
+				
+					player.tileX = player.tileX + 1;
+					player.moving = true;
+				end
 			end
 		end
 	end
@@ -233,7 +252,14 @@ function love.update(dt)
 	player:update();
 	
 	for i = 1, #room.entities do
+		if e.dead then
+			table.remove(room.entities, i)
+		end
+	end
+	
+	for i = 1, #room.entities do
 		e = room.entities[i];
+		
 		e:update();
 	end
 end

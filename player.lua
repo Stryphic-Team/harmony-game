@@ -35,6 +35,8 @@ function Player:update()
 		self.currentnum = note.num; self.currentden = note.den;
 		
 		love.audio.play(SND_PLAYER)
+		
+		next_turn();
 	end
 end
 
