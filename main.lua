@@ -15,6 +15,7 @@ SPR_TILESET_1 = love.graphics.newImage("img/spr_tileset_1.png");
 SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
 SPR_PLAYER_1  = love.graphics.newImage("img/spr_player_1.png");
 SPR_ENEMY     = love.graphics.newImage("img/spr_enemy.png");
+SPR_HEART     = love.graphics.newImage("img/spr_heart.png");
 
 SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
@@ -117,6 +118,7 @@ function init_room( id )
 	room_data = require(room_paths[id])
 	
 	room.width = room_data.width; room.height = room_data.height;
+	room.entities = {};
 	
 	map = {};
 	
@@ -160,11 +162,14 @@ function init_room( id )
 	
 	-- new player object is created every room init ( maybe it shouldnt be like that I DONT KNOW )
 	player = Player:new{ tileX = room.centerX, tileY = room.centerY };
+	
+	e = Entity:new{};
+	table.insert(room.entities, e)
 end
 
 function love.load()
 
-	love.window.setTitle("JI game")
+	love.window.setTitle("JI Deez game")
 
 	room_paths = {
 	"room/testroom",
@@ -173,31 +178,30 @@ function love.load()
 	rooms = require "rooms"
 
 	init_room(1)
-	
-	e = Entity:new{};
-	table.insert(room.entities, e)
 end
 
 function love.keypressed(key, scancode, isrepeat)
 
-	if key == "z" then
-		ChangeChord( { 0, 0, 1 }, { 0, 1, 0 } ) -- major triad
-		PlayChord();
-	end
-	if key == "x" then
-		ChangeChord( { 0, 1, 1 }, { 0, -1, 0 } ) -- minor triad
-		PlayChord();
-	end
-	if key == "c" then
-		ChangeChord( { 0, -1, 1 }, { 0, 0, 0 } ) -- sus chord
-		PlayChord();
-	end
-	if key == "r" then
-		ChangeChord({}, {});
-		PlayChord();
+	if not player.dead then
+		if key == "z" then
+			ChangeChord( { 0, 0, 1 }, { 0, 1, 0 } ) -- major triad
+			PlayChord();
+		end
+		if key == "x" then
+			ChangeChord( { 0, 1, 1 }, { 0, -1, 0 } ) -- minor triad
+			PlayChord();
+		end
+		if key == "c" then
+			ChangeChord( { 0, -1, 1 }, { 0, 0, 0 } ) -- sus chord
+			PlayChord();
+		end
+		if key == "r" then
+			ChangeChord({}, {});
+			PlayChord();
+		end
 	end
 	
-	if not player.moving then
+	if not player.moving and not player.dead then
 		if key == "up" then
 			if player.tileY > 1 then
 			
@@ -262,6 +266,10 @@ function love.update(dt)
 		
 		e:update();
 	end
+	
+	if player.dead and player.respawn_timer <= (player.RESPAWN_TIME / 2) then
+		init_room(1);
+	end
 end
 
 function love.draw()
@@ -292,6 +300,19 @@ function love.draw()
 		love.graphics.draw(SPR_PLAYER_1, tra_x(player.x), tra_y(player.y - 32), 0, cam_zoom, cam_zoom);
 	else 
 		love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	end
+	
+	if player.dead then
+	
+		opacity = 0.5 + ( math.sin( (player.RESPAWN_TIME - 20 - player.respawn_timer) * (math.pi / ( player.RESPAWN_TIME / 2 )) ) / 2 )
+	
+		love.graphics.setColor(0,0,0,opacity)
+		love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight())
+		love.graphics.setColor(1,1,1,1)
+	end
+	
+	for i = 1, player.health do
+		love.graphics.draw(SPR_HEART, 16 + (i*40), 32)
 	end
 	
 	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)

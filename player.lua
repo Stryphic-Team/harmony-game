@@ -5,12 +5,19 @@ Player = {
 	x = 40, -- displayed x and y on screen
 	y = 40,
 	moving = false, -- just a useless bool iunno
+	moves_outside_chord = 0,
 
 	currentnum = 1,
 	currentden = 1,
 	
 	safeTiles = {},
-	chordTones = {}
+	chordTones = {},
+	
+	health = 3,
+	
+	dead = false, -- used to trigger die respawn anim
+	RESPAWN_TIME = 100,
+	respawn_timer = 0,
 }
 
 function Player:update()
@@ -36,7 +43,30 @@ function Player:update()
 		
 		love.audio.play(SND_PLAYER)
 		
+		-- initially steps moves_outside_chord
+		self.moves_outside_chord = self.moves_outside_chord + 1
+		-- but if it finds that you actually are on a chord tone it resets
+		for i = 1, #self.safeTiles do
+			if tile == self.safeTiles[i] then
+				self.moves_outside_chord = 0
+				break
+			end
+		end
+		
+		if self.moves_outside_chord > 2 then
+			self.health = self.health - 1;
+		end
+		
+		print(self.moves_outside_chord)
+		
 		next_turn();
+	end
+	
+	if self.health <= 0 and not self.dead then
+		self.dead = true; self.respawn_timer = self.RESPAWN_TIME;
+	end
+	if self.dead then
+		self.respawn_timer = self.respawn_timer - 1;
 	end
 end
 
