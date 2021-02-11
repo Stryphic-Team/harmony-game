@@ -13,7 +13,7 @@ Player = {
 	safeTiles = {},
 	chordTones = {},
 	
-	health = 3,
+	health = 5,
 	
 	dead = false, -- used to trigger die respawn anim
 	RESPAWN_TIME = 100,
@@ -61,6 +61,9 @@ function Player:update()
 		
 		next_turn();
 	end
+	
+	-- enable this for cheat mode if you wanna debug
+	--self.health = 1000;
 	
 	if self.health <= 0 and not self.dead then
 		self.dead = true; self.respawn_timer = self.RESPAWN_TIME;

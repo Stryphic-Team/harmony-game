@@ -119,6 +119,7 @@ function init_room( id )
 	
 	room.width = room_data.width; room.height = room_data.height;
 	room.entities = {};
+	room.particles = {};
 	
 	map = {};
 	
@@ -170,6 +171,8 @@ end
 function love.load()
 
 	love.window.setTitle("JI Deez game")
+	font = love.graphics.newFont(24)
+	love.graphics.setFont(font)
 
 	room_paths = {
 	"room/testroom",
@@ -316,4 +319,8 @@ function love.draw()
 	end
 	
 	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
+	
+	cents = 1200 * (math.log( player.currentnum / player.currentden ) / math.log( 2 ))
+	
+	love.graphics.print(cents, 0, 80)
 end
