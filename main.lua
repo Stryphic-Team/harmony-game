@@ -47,6 +47,14 @@ function ChangeChord(offsetsX, offsetsY)
 			end
 		end
 	end
+	
+	player.chordsRemaining = player.chordsRemaining - 1;
+		
+	next_turn();
+	
+	if player.chordsRemaining == 0 then
+		player.dead = true; player.respawn_timer = player.RESPAWN_TIME;
+	end
 end
 
 function PlayChord()
@@ -63,8 +71,6 @@ function PlayChord()
 		
 		love.audio.play(organ_tones[i]);
 	end
-
-	next_turn();
 end
 
 function CalcPitchRatio( tilex, tiley ) 
@@ -170,8 +176,9 @@ end
 
 function love.load()
 
+	success = love.window.setMode( 800, 600, {resizable=true} )
 	love.window.setTitle("JI Deez game")
-	font = love.graphics.newFont(24)
+	font = love.graphics.newFont("zeldadxt.ttf", 24)
 	love.graphics.setFont(font)
 
 	room_paths = {
@@ -185,7 +192,7 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
 
-	if not player.dead then
+	if not player.dead and player.chordsRemaining > 0 then
 		if key == "z" then
 			ChangeChord( { 0, 0, 1 }, { 0, 1, 0 } ) -- major triad
 			PlayChord();
@@ -314,7 +321,11 @@ function love.draw()
 		love.graphics.setColor(1,1,1,1)
 	end
 	
-	for i = 1, player.health do
+	love.graphics.setColor(0,0,0,0.5)
+	love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),150)
+	love.graphics.setColor(1,1,1,1)
+	
+	for i = 0, player.health - 1 do
 		love.graphics.draw(SPR_HEART, 16 + (i*40), 32)
 	end
 	
@@ -323,4 +334,5 @@ function love.draw()
 	cents = 1200 * (math.log( player.currentnum / player.currentden ) / math.log( 2 ))
 	
 	love.graphics.print(cents, 0, 80)
+	love.graphics.print("Chords remaining: " .. player.chordsRemaining, 0, 120)
 end

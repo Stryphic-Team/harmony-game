@@ -14,6 +14,7 @@ Player = {
 	chordTones = {},
 	
 	health = 5,
+	chordsRemaining = 5,
 	
 	dead = false, -- used to trigger die respawn anim
 	RESPAWN_TIME = 100,
@@ -21,6 +22,9 @@ Player = {
 }
 
 function Player:update()
+
+	cam_x = player.x; cam_y = player.y;
+
 	self.x = self.x + (((self.tileX * 32) - self.x) / 5);
 	self.y = self.y + (((self.tileY * 32) - self.y) / 5);
 	
