@@ -8,5 +8,9 @@ return {
 	{
 		name="testroom2",
 		entities = {},
+	},
+	{
+		name="testroom3",
+		entities = {},
 	}
 }

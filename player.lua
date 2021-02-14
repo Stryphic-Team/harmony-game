@@ -14,7 +14,7 @@ Player = {
 	chordTones = {},
 	
 	health = 5,
-	chordsRemaining = 5,
+	chordsRemaining = 20,
 	
 	dead = false, -- used to trigger die respawn anim
 	RESPAWN_TIME = 100,

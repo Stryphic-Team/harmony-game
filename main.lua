@@ -5,9 +5,10 @@ require "player"
 require "note"
 
 TILE_FREE = 1
-TILE_CNTR = 3
+TILE_CNTR = 130
 TILE_HOLE = 4
 TILE_WALL = 5
+TILE_SPAWNMOB_ANT = 131
 
 SPR_TILESET   = love.graphics.newImage("img/tileset.png");
 SPR_TILESET_0 = love.graphics.newImage("img/spr_tileset_0.png");
@@ -115,7 +116,10 @@ end
 
 function next_turn()
 	for i = 1, #room.entities do
-		e:nextTurn();
+		e = room.entities[i];
+		if not e.dead then
+			e:nextTurn();
+		end
 	end
 end
 
@@ -130,31 +134,39 @@ function init_room( id )
 	map = {};
 	
 	-- First pass on room initialization just looks for the center tile (Its marked with the red circle in the editor but not in game)
-	for i = 1, room.width do
-		for j = 1, room.height do
+	for i = 1, room.height do
+		for j = 1, room.width do
 
-			index = ((i-1) * room.width) + (j-1)
+			index = ((j-1) * room.width) + (i-1)
 			tilefromdata = room_data.layers[1].data[index+1]
 		
-			if tilefromdata == 3 then 
+			if tilefromdata == TILE_CNTR then 
 				room.centerX = i; room.centerY = j;
-				tilefromdata = 1
+				tilefromdata = TILE_FREE
 			end
 		end
 	end
 	
 	-- Second pass on room initialization creates all the tile objects and, with the known center tile, calculates the note pitches and makes note objects
-	for i = 1, room.width do
+	for i = 1, room.height do
 		
 		map[i] = {};
 	
-		for j = 1, room.height do
+		for j = 1, room.width do
 		
-			index = ((i-1) * room.width) + (j-1)
+			index = ((j-1) * room.width) + (i-1)
 			tilefromdata = room_data.layers[1].data[index+1]
 				
-			if tilefromdata == 2 or tilefromdata == 3 then
-				tilefromdata = 1
+			if tilefromdata == 2 or tilefromdata == TILE_CNTR then
+				tilefromdata = TILE_FREE
+			end
+			
+			if tilefromdata == TILE_SPAWNMOB_ANT then
+			
+				e = Entity:new{ tileX = i, tileY = j };
+				table.insert(room.entities, e)
+			
+				tilefromdata = TILE_FREE
 			end
 		
 			t = Tile:new{ x = i, y = j, tiletype = tilefromdata };
@@ -169,9 +181,6 @@ function init_room( id )
 	
 	-- new player object is created every room init ( maybe it shouldnt be like that I DONT KNOW )
 	player = Player:new{ tileX = room.centerX, tileY = room.centerY };
-	
-	e = Entity:new{};
-	table.insert(room.entities, e)
 end
 
 function love.load()
@@ -183,11 +192,12 @@ function love.load()
 
 	room_paths = {
 	"room/testroom",
-	"room/testroom2" }
+	"room/testroom2",
+	"room/testroom3"}
 
 	rooms = require "rooms"
 
-	init_room(1)
+	init_room(3)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -265,11 +275,11 @@ function love.update(dt)
 
 	player:update();
 	
-	for i = 1, #room.entities do
-		if e.dead then
-			table.remove(room.entities, i)
-		end
-	end
+	-- for i = 1, #room.entities do
+		-- if e.dead then
+			-- table.remove(room.entities, i)
+		-- end
+	-- end
 	
 	for i = 1, #room.entities do
 		e = room.entities[i];
@@ -278,7 +288,7 @@ function love.update(dt)
 	end
 	
 	if player.dead and player.respawn_timer <= (player.RESPAWN_TIME / 2) then
-		init_room(1);
+		init_room(3);
 	end
 end
 
@@ -291,9 +301,11 @@ function love.draw()
 			tx = ((t.tiletype - 1) % 16) * 32
 			ty = math.floor((t.tiletype - 1) / 16) * 32
 			
-			quad = love.graphics.newQuad( tx, ty, 32, 32, SPR_TILESET:getDimensions() )
-			
-			love.graphics.draw(SPR_TILESET, quad, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
+			if t.tiletype ~= 0 then
+				quad = love.graphics.newQuad( tx, ty, 32, 32, SPR_TILESET:getDimensions() )
+				
+				love.graphics.draw(SPR_TILESET, quad, tra_x(i*32), tra_y(j*32), 0, cam_zoom, cam_zoom)
+			end
 		end
 	end 
 	for i = 1, #player.safeTiles do
@@ -303,7 +315,9 @@ function love.draw()
 	
 	for i = 1, #room.entities do
 		e = room.entities[i]
-		love.graphics.draw(SPR_ENEMY, tra_x(e.x), tra_y(e.y), 0, cam_zoom, cam_zoom);
+		if not e.dead then
+			love.graphics.draw(SPR_ENEMY, tra_x(e.x), tra_y(e.y), 0, cam_zoom, cam_zoom);
+		end
 	end
 	
 	if player.uppercase then
