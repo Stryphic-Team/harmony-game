@@ -350,7 +350,7 @@ function love.draw()
 	end
 	
 	for i = 0, player.health - 1 do
-		love.graphics.draw(SPR_HEART, 16 + (i*40), 32)
+		love.graphics.draw(SPR_HEART, 36 + (i*40), 32)
 	end
 	
 	-- love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)

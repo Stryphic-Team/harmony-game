@@ -2,8 +2,24 @@ function init_gui()
 
 	WINDOW_MAIN = {};
 
-	topbar = TextBox_TopBar:new{ x=0, y=0, height=150 }
+	topbar = TextBox_TopBar:new{ x=0, y=0, height=200 }
 	table.insert(WINDOW_MAIN, topbar);
+	
+	statusbox = TextBox_Status:new{ width=256 }
+	topbar:appendElement(statusbox);
+	table.insert(WINDOW_MAIN, statusbox);
+	
+	testchild = TextBox:new{text="Z"}
+	topbar:appendElement(testchild);
+	table.insert(WINDOW_MAIN, testchild);
+	
+	testchild2 = TextBox:new{text="X"}
+	topbar:appendElement(testchild2);
+	table.insert(WINDOW_MAIN, testchild2);
+	
+	testchild3 = TextBox:new{text="C"}
+	topbar:appendElement(testchild3);
+	table.insert(WINDOW_MAIN, testchild3);
 
 	window = WINDOW_MAIN;
 end
@@ -14,7 +30,7 @@ TextBox = {
 	y = -1,
 	-- if not manually assigned, (-1, -1) is the "auto" setting to fill up the parent box
 	
-	width = 100, height = 100, padding = 50,
+	width = 100, height = -1, padding = 10,
 	
 	-- x and y as they appear on the screen and to the children divs
 	dispx = -1, dispy = -1,
@@ -26,7 +42,7 @@ TextBox = {
 	parent = nil,  -- the text box above it in the hierarchy
 	children = {}, -- other text boxes displayed within it
 	
-	text = "Deez Nuts Ha Got Eem Deez Nuts Ha Got Eem Deez Nuts Ha Got Eem Deez Nuts Ha Got Eem ",
+	text = "",
 }
 
 function TextBox:appendElement(e)
@@ -44,9 +60,36 @@ function TextBox:new(o)
 end
 
 function TextBox:update()
-	self.dispx = self.x + self.padding; self.dispy = self.y + self.padding;
+
+	-- auto positioning setting. Floats left 
+	if (self.x == -1 and self.y == -1) then
+		
+		p = self.parent;
+		
+		self.dispx = p.dispx + p.padding;
+		self.dispy = p.dispy + p.padding;
+		
+		for i = 1, #p.children do
+			
+			if p.children[i] == self then
+				break;
+			else
+				self.dispx = self.dispx + p.children[i].dispwidth + (p.padding)
+			end
+		end
+		
+	-- Manual positioning setting
+	else	
+		self.dispx = self.x + self.padding; self.dispy = self.y + self.padding;
+	end
 	
 	self.dispwidth = self.width - (self.padding*2); self.dispheight = self.height - (self.padding*2);
+	
+	if (self.height == -1) then
+	
+		self.dispheight = self.parent.dispheight - self.parent.padding * 2
+	
+	end
 end
 
 function TextBox:draw()
@@ -65,8 +108,18 @@ TextBox_TopBar = TextBox:new{
 
 };
 
+TextBox_Status = TextBox:new{
+
+};
+
 function TextBox_TopBar:update()
 	TextBox.update(self)
 
 	self.width = love.graphics.getWidth();
+end
+
+function TextBox_Status:update()
+	TextBox.update(self)
+
+	self.text = "\n\n\nChords remaining:" .. player.chordsRemaining
 end
