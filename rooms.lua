@@ -3,7 +3,7 @@
 return {
 	{
 		name="testroom",
-		chordshapes = {  },
+		chordshapes = { },
 	},
 	{
 		name="testroom2",
@@ -11,6 +11,6 @@ return {
 	},
 	{
 		name="testroom3",
-		chordshapes = {  },
+		chordshapes = { CHORD_MAJOR, CHORD_MINOR, CHORD_SUS4 },
 	}
 }

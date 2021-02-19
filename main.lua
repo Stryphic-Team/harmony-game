@@ -4,6 +4,7 @@ require "entity"
 require "player"
 require "note"
 require "gui"
+require "chord"
 
 TILE_FREE = 1
 TILE_CNTR = 130
@@ -206,18 +207,21 @@ end
 function love.keypressed(key, scancode, isrepeat)
 
 	if not player.dead and player.chordsRemaining > 0 then
-		if key == "z" then
-			ChangeChord( { 0, 0, 1 }, { 0, 1, 0 } ) -- major triad
+		if key == "z" or key == "x" or key == "c" then
+			if key == "z" then
+				chord = room.chordshapes[1]
+			end
+			if key == "x" then
+				chord = room.chordshapes[2]
+			end
+			if key == "c" then
+				chord = room.chordshapes[3]
+			end
+			
+			ChangeChord( chord.xoffsets, chord.yoffsets ) -- major triad
 			PlayChord();
 		end
-		if key == "x" then
-			ChangeChord( { 0, 1, 1 }, { 0, -1, 0 } ) -- minor triad
-			PlayChord();
-		end
-		if key == "c" then
-			ChangeChord( { 0, -1, 1 }, { 0, 0, 0 } ) -- sus chord
-			PlayChord();
-		end
+		
 		if key == "r" then
 			ChangeChord({}, {});
 			PlayChord();
@@ -277,12 +281,6 @@ function love.update(dt)
 	player.uppercase = love.keyboard.isDown("lshift")
 
 	player:update();
-	
-	-- for i = 1, #room.entities do
-		-- if e.dead then
-			-- table.remove(room.entities, i)
-		-- end
-	-- end
 	
 	for i = 1, #room.entities do
 		e = room.entities[i];

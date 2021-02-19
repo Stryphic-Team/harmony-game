@@ -9,17 +9,17 @@ function init_gui()
 	topbar:appendElement(statusbox);
 	table.insert(WINDOW_MAIN, statusbox);
 	
-	testchild = TextBox:new{text="Z"}
-	topbar:appendElement(testchild);
-	table.insert(WINDOW_MAIN, testchild);
+	chord1box = TextBox_ChordShape:new{text="Z", id=1}
+	topbar:appendElement(chord1box);
+	table.insert(WINDOW_MAIN, chord1box);
 	
-	testchild2 = TextBox:new{text="X"}
-	topbar:appendElement(testchild2);
-	table.insert(WINDOW_MAIN, testchild2);
+	chord2box = TextBox_ChordShape:new{text="X", id=2}
+	topbar:appendElement(chord2box);
+	table.insert(WINDOW_MAIN, chord2box);
 	
-	testchild3 = TextBox:new{text="C"}
-	topbar:appendElement(testchild3);
-	table.insert(WINDOW_MAIN, testchild3);
+	chord3box = TextBox_ChordShape:new{text="C", id=3}
+	topbar:appendElement(chord3box);
+	table.insert(WINDOW_MAIN, chord3box);
 
 	window = WINDOW_MAIN;
 end
@@ -109,6 +109,12 @@ TextBox_TopBar = TextBox:new{
 };
 
 TextBox_Status = TextBox:new{
+
+};
+
+TextBox_ChordShape = TextBox:new{
+	
+	id = 1, -- ID corresponds to an id within the room metadata which is the source of the different chordshapes
 
 };
 
