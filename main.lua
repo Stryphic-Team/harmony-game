@@ -3,6 +3,7 @@ require "camera"
 require "entity"
 require "player"
 require "note"
+require "gui"
 
 TILE_FREE = 1
 TILE_CNTR = 130
@@ -189,6 +190,8 @@ function love.load()
 	love.window.setTitle("JI Deez game")
 	font = love.graphics.newFont("zeldadxt.ttf", 24)
 	love.graphics.setFont(font)
+	
+	init_gui();
 
 	room_paths = {
 	"room/testroom",
@@ -287,6 +290,12 @@ function love.update(dt)
 		e:update();
 	end
 	
+	for i = 1, #window do
+		e = window[i];
+		e:update();
+	end
+	
+	
 	if player.dead and player.respawn_timer <= (player.RESPAWN_TIME / 2) then
 		init_room(3);
 	end
@@ -335,9 +344,12 @@ function love.draw()
 		love.graphics.setColor(1,1,1,1)
 	end
 	
-	love.graphics.setColor(0,0,0,0.5)
-	love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),150)
-	love.graphics.setColor(1,1,1,1)
+	for i = 1, #window do
+		box = window[i];
+		love.graphics.setColor(box.color[1], box.color[2], box.color[3], box.color[4]);
+		love.graphics.rectangle("fill",box.x,box.y,box.width,box.height);
+		love.graphics.setColor(1,1,1,1)
+	end
 	
 	for i = 0, player.health - 1 do
 		love.graphics.draw(SPR_HEART, 16 + (i*40), 32)

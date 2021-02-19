@@ -3,14 +3,14 @@
 return {
 	{
 		name="testroom",
-		entities = {},
+		chordshapes = {  },
 	},
 	{
 		name="testroom2",
-		entities = {},
+		chordshapes = {  },
 	},
 	{
 		name="testroom3",
-		entities = {},
+		chordshapes = {  },
 	}
 }
