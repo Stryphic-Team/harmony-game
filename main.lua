@@ -346,19 +346,17 @@ function love.draw()
 	
 	for i = 1, #window do
 		box = window[i];
-		love.graphics.setColor(box.color[1], box.color[2], box.color[3], box.color[4]);
-		love.graphics.rectangle("fill",box.x,box.y,box.width,box.height);
-		love.graphics.setColor(1,1,1,1)
+		box:draw();
 	end
 	
 	for i = 0, player.health - 1 do
 		love.graphics.draw(SPR_HEART, 16 + (i*40), 32)
 	end
 	
-	love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
+	-- love.graphics.print(player.currentnum .. "/" .. player.currentden, 0, 0)
 	
-	cents = 1200 * (math.log( player.currentnum / player.currentden ) / math.log( 2 ))
+	-- cents = 1200 * (math.log( player.currentnum / player.currentden ) / math.log( 2 ))
 	
-	love.graphics.print(cents, 0, 80)
-	love.graphics.print("Chords remaining: " .. player.chordsRemaining, 0, 120)
+	-- love.graphics.print(cents, 0, 80)
+	-- love.graphics.print("Chords remaining: " .. player.chordsRemaining, 0, 120)
 end
