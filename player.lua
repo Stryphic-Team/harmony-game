@@ -14,7 +14,7 @@ Player = {
 	chordTones = {},
 	
 	health = 5,
-	chordsRemaining = 20,
+	chordsRemaining = 100,
 	
 	dead = false, -- used to trigger die respawn anim
 	RESPAWN_TIME = 100,
@@ -23,7 +23,7 @@ Player = {
 
 function Player:update()
 
-	cam_x = player.x; cam_y = player.y;
+	cam_x = player.x + 16; cam_y = player.y + 16;
 
 	self.x = self.x + (((self.tileX * 32) - self.x) / 5);
 	self.y = self.y + (((self.tileY * 32) - self.y) / 5);
@@ -75,6 +75,16 @@ function Player:update()
 	if self.dead then
 		self.respawn_timer = self.respawn_timer - 1;
 	end
+end
+
+function Player:draw()
+	-- if player.uppercase then
+		-- love.graphics.draw(SPR_PLAYER_1, tra_x(player.x), tra_y(player.y - 32), 0, cam_zoom, cam_zoom);
+	-- else 
+		-- love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	-- end
+	love.graphics.draw(SPR_PLAYER_STEM, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
+	love.graphics.draw(SPR_PLAYER_HEAD, tra_x(player.x + 4), tra_y(player.y - 4), 0, cam_zoom, cam_zoom);
 end
 
 function Player:new(o)

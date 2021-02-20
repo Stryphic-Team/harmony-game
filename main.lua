@@ -19,6 +19,8 @@ SPR_PLAYER_0  = love.graphics.newImage("img/spr_player_0.png");
 SPR_PLAYER_1  = love.graphics.newImage("img/spr_player_1.png");
 SPR_ENEMY     = love.graphics.newImage("img/spr_enemy.png");
 SPR_HEART     = love.graphics.newImage("img/spr_heart.png");
+SPR_PLAYER_HEAD = love.graphics.newImage("img/spr_player_head.png");
+SPR_PLAYER_STEM = love.graphics.newImage("img/spr_player_stem.png");
 
 SPR_HUD_TILE  = love.graphics.newImage("img/spr_hud_tile.png");
 SPR_HUD_ROOT  = love.graphics.newImage("img/spr_hud_root.png");
@@ -27,7 +29,14 @@ SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
 SND_ORGAN2 = love.audio.newSource("snd/pianuh.wav" , "static");
 SND_ORGAN3 = love.audio.newSource("snd/pianuh.wav" , "static");
-SND_ENEMY  = love.audio.newSource("snd/snd_enemy.wav", "static");
+
+function isSafeTile(tile)
+
+	for i = 1, #player.safeTiles do
+		if player.safeTiles[i] == tile then return true end
+	end
+	return false
+end
 
 function ChangeChord(offsetsX, offsetsY)
 	player.safeTiles = {};
@@ -168,7 +177,8 @@ function init_room( id )
 			
 			if tilefromdata == TILE_SPAWNMOB_ANT then
 			
-				e = Entity:new{ tileX = i, tileY = j };
+				e = EntityAnt:new{ tileX = i, tileY = j };
+				
 				table.insert(room.entities, e)
 			
 				tilefromdata = TILE_FREE
@@ -326,15 +336,11 @@ function love.draw()
 	for i = 1, #room.entities do
 		e = room.entities[i]
 		if not e.dead then
-			love.graphics.draw(SPR_ENEMY, tra_x(e.x), tra_y(e.y), 0, cam_zoom, cam_zoom);
+			e:draw();
 		end
 	end
 	
-	if player.uppercase then
-		love.graphics.draw(SPR_PLAYER_1, tra_x(player.x), tra_y(player.y - 32), 0, cam_zoom, cam_zoom);
-	else 
-		love.graphics.draw(SPR_PLAYER_0, tra_x(player.x), tra_y(player.y), 0, cam_zoom, cam_zoom);
-	end
+	player:draw();
 	
 	if player.dead then
 	

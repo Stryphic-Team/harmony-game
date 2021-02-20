@@ -166,6 +166,14 @@ function TextBox_ChordShape:draw()
 	end
 end
 
+function TextBox_ChordShape:update()
+	TextBox.update(self)
+	
+	self.text = string.sub(self.text, 1, 1)
+	
+	self.text = self.text .. "- " .. room.chordshapes[self.id].name
+end
+
 function TextBox_TopBar:update()
 	TextBox.update(self)
 
