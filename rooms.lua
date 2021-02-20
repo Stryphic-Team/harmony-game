@@ -1,4 +1,4 @@
--- This contains all the metadata for each room ,including the entities which are placed in it.
+-- This contains all the metadata for each room
 
 return {
 	{
@@ -12,5 +12,6 @@ return {
 	{
 		name="testroom3",
 		chordshapes = { CHORD_MAJOR, CHORD_MINOR, CHORD_SUS4 },
+		chordcount  = 20,
 	}
 }

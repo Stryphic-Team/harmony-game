@@ -118,6 +118,54 @@ TextBox_ChordShape = TextBox:new{
 
 };
 
+function TextBox_ChordShape:draw()
+	TextBox.draw(self)
+	
+	love.graphics.setColor(1,1,1,1)
+	--love.graphics.line(self.dispx, self.dispy, self.dispx+self.dispwidth, self.dispy+self.dispheight);
+	shape = room.chordshapes[self.id];
+	
+	extreme_L = 0; extreme_R = 0; extreme_U = 0; extreme_D = 0;
+	
+	for i = 1, #shape.xoffsets do
+		
+		offsetx = shape.xoffsets[i]; offsety = shape.yoffsets[i];
+		if offsetx > extreme_R then
+			extreme_R = offsetx;
+		elseif offsetx < extreme_L then
+			extreme_L = offsetx;
+		end
+		if offsety > extreme_D then
+			extreme_D = offsety;
+		elseif offsety < extreme_U then 
+			extreme_U = offsety;
+		end
+	end
+	shapewidth = extreme_R - extreme_L + 1; shapeheight = extreme_D - extreme_U + 1;
+
+	TILE_DRAW_SIZE = 32;
+	self.width = shapewidth * TILE_DRAW_SIZE * 2;
+	
+	--self.text = shapewidth
+	
+	for i = 1, #shape.xoffsets do
+	
+		offsetx = shape.xoffsets[i]; offsety = shape.yoffsets[i];
+		
+		centerx = self.dispx + (self.dispwidth / 2) - ( TILE_DRAW_SIZE / 2 ); centery = self.dispy + (self.dispheight/ 2) - ( TILE_DRAW_SIZE / 2 );
+		
+		tiledrawx = centerx + (offsetx*TILE_DRAW_SIZE); tiledrawy = centery + (offsety*TILE_DRAW_SIZE);
+		
+		--love.graphics.rectangle( "fill", tiledrawx, tiledrawy, TILE_DRAW_SIZE, TILE_DRAW_SIZE )
+		
+		if offsetx == 0 and offsety == 0 then
+			love.graphics.draw(SPR_HUD_ROOT, tiledrawx, tiledrawy, 0, 4, 4);
+		else
+			love.graphics.draw(SPR_HUD_TILE, tiledrawx, tiledrawy, 0, 4, 4);
+		end
+	end
+end
+
 function TextBox_TopBar:update()
 	TextBox.update(self)
 

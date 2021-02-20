@@ -20,6 +20,9 @@ SPR_PLAYER_1  = love.graphics.newImage("img/spr_player_1.png");
 SPR_ENEMY     = love.graphics.newImage("img/spr_enemy.png");
 SPR_HEART     = love.graphics.newImage("img/spr_heart.png");
 
+SPR_HUD_TILE  = love.graphics.newImage("img/spr_hud_tile.png");
+SPR_HUD_ROOT  = love.graphics.newImage("img/spr_hud_root.png");
+
 SND_PLAYER = love.audio.newSource("snd/snd_player.wav", "static");
 SND_ORGAN1 = love.audio.newSource("snd/pianuh.wav" , "static");
 SND_ORGAN2 = love.audio.newSource("snd/pianuh.wav" , "static");
