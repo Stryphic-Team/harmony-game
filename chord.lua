@@ -17,3 +17,4 @@ end
 CHORD_MAJOR = ChordShape:new{ xoffsets = { 0, 0, 1 }, yoffsets = { 0, 1, 0 } , name="maj" }; 
 CHORD_MINOR = ChordShape:new{ xoffsets = { 0, 1, 1 }, yoffsets = { 0, -1, 0 }, name="min"}; 
 CHORD_SUS4  = ChordShape:new{ xoffsets = { 0, -1, 1 }, yoffsets = { 0, 0, 0 }, name="sus4"}; 
+CHORD_AUG   = ChordShape:new{ xoffsets = { 0, 0, 0 }, yoffsets = { 0, 1, -1 }, name="aug"}; 

@@ -85,6 +85,7 @@ function TextBox:update()
 	
 	self.dispwidth = self.width - (self.padding*2); self.dispheight = self.height - (self.padding*2);
 	
+	-- Auto height(if set to -1 then it fills up to the height of the parent div)
 	if (self.height == -1) then
 	
 		self.dispheight = self.parent.dispheight - self.parent.padding * 2
@@ -144,7 +145,7 @@ function TextBox_ChordShape:draw()
 	shapewidth = extreme_R - extreme_L + 1; shapeheight = extreme_D - extreme_U + 1;
 
 	TILE_DRAW_SIZE = 32;
-	self.width = shapewidth * TILE_DRAW_SIZE * 2;
+	self.width = math.max(4*TILE_DRAW_SIZE, shapewidth * TILE_DRAW_SIZE * 2);
 	
 	--self.text = shapewidth
 	

@@ -11,7 +11,7 @@ return {
 	},
 	{
 		name="testroom3",
-		chordshapes = { CHORD_MAJOR, CHORD_MINOR, CHORD_SUS4 },
+		chordshapes = { CHORD_MAJOR, CHORD_AUG, CHORD_SUS4 },
 		chordcount  = 20,
 	}
 }

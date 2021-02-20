@@ -32,22 +32,6 @@ function Entity:draw()
 end
 
 function Entity:nextTurn()
-	
-	--self.moving = true;
-	
-	-- randoffX = {  0, 0, -1, 1 } 
-	-- randoffY = { -1, 1,  0, 0 }
-	
-	-- randomtile = nil;
-	-- while randomtile == nil or randomtile.tiletype ~= 1 do
-	
-		-- randindex = love.math.random(1,4)
-	
-		-- if map[self.tileX + randoffX[randindex]] ~= nil then
-			-- randomtile = map[self.tileX + randoffX[randindex]][self.tileY + randoffY[randindex]]
-		-- end
-	-- end
-	-- self.tileX = randomtile.x ; self.tileY = randomtile.y ;
 
 	currentile = map[self.tileX][self.tileY];
 	if isSafeTile(currentile) then
